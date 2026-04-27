@@ -1,0 +1,18 @@
+.env
+.worktrees/
+
+# Build artifacts
+target/
+menubar/.build/
+
+# Internal / AI tooling
+CLAUDE.md
+TODO.md
+
+# macOS
+.DS_Store
+
+# Editor
+.vscode/
+.idea/
+*.swp

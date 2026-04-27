@@ -1,0 +1,32 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+"
+
+jobs:
+  release:
+    runs-on: macos-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - name: Build
+        run: |
+          cargo build --release
+          swift build --package-path menubar -c release
+          cp menubar/.build/release/MenuBar target/release/pace-coach-menubar
+      - name: Package
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          TARBALL="pace-coach-${VERSION}-aarch64-apple-darwin.tar.gz"
+          tar -czf "$TARBALL" -C target/release pace-coach pace-coach-menubar
+          echo "TARBALL=$TARBALL" >> "$GITHUB_ENV"
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Pace Coach ${{ github.ref_name }}"
+          files: ${{ env.TARBALL }}
