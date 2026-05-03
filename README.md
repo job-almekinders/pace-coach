@@ -27,7 +27,7 @@ Download the latest release, extract both binaries, and put them on your `$PATH`
 ```bash
 # replace version with your desired version
 VERSION=0.1.0
-curl -L https://github.com/job-almekinders/pace-coach/releases/download/v$VERSION/pace-coach-$VERSION-aarch64-apple-darwin.tar.gz | tar xz
+wget https://github.com/job-almekinders/pace-coach/releases/download/v$VERSION/pace-coach-$VERSION-aarch64-apple-darwin.tar.gz | tar xz
 mv pace-coach pace-coach-menubar /usr/local/bin/
 ```
 
