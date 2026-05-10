@@ -2,7 +2,11 @@
 
 A macOS CLI daemon that watches your typing rhythm and nudges you when you are rushing/stressed.
 
-It monitors your keystrokes locally (nothing leaves your machine), classifies your typing state every two seconds, fires a macOS notification when you've been in a stressed state for too long, and shows a live emoji in your menu bar.
+It monitors your keystrokes locally (nothing leaves your machine!), classifies your typing state every two seconds, fires a macOS notification when you've been in a stressed state for too long, and shows a live emoji in your menu bar with the status of the application.
+
+![Demo](assets/demo.gif)
+
+Note that for demo purposes, the nudge fires earlier than in the default configuration.
 
 **States:**
 
@@ -10,6 +14,9 @@ It monitors your keystrokes locally (nothing leaves your machine), classifies yo
 - 🔵 Passive — low activity or irregular rhythm
 - 🟡 Normal — active, correction rate within range
 - 🔴 Stressed — high correction rate sustained
+
+The primary driver for the Stressed state is the correction rate.
+See [`src/classifier.rs`](src/classifier.rs) for the full classification logic.
 
 ---
 
@@ -33,7 +40,7 @@ tar -xvzf $FILENAME
 mv pace-coach pace-coach-menubar /usr/local/bin/
 ```
 
-pace-coach requires **Input Monitoring** permission (System Settings → Privacy & Security → Input Monitoring). Grant it on first run.
+pace-coach requires **Input Monitoring** permission (System Settings → Privacy & Security → Input Monitoring). Please grant it on the first run.
 
 ---
 
@@ -63,8 +70,8 @@ Edit `~/.pace-coach/config.json` then restart the daemon:
 
 | Setting                     | Default | Description                                                                                   |
 | --------------------------- | ------- | --------------------------------------------------------------------------------------------- |
-| `correction_rate_threshold` | `0.06`  | Fraction of keystrokes that are corrections before state is STRESSED. Lower = more sensitive. |
-| `stress_duration_secs`      | `10`    | Seconds of sustained STRESSED state before a nudge fires.                                     |
+| `correction_rate_threshold` | `0.06`  | Fraction of keystrokes that are corrections before state is Stressed. Lower = more sensitive. |
+| `stress_duration_secs`      | `10`    | Seconds of sustained Stressed state before a nudge fires.                                     |
 | `nudge_cooldown_secs`       | `60`    | Minimum seconds between nudges.                                                               |
 
 ---
@@ -108,3 +115,4 @@ Contributions for fixes or feature additions are welcome! Feature additions I ca
 
 - A more user friendly installation method, such that non-technical users can also use `pace-coach`.
 - A more user friendly method to call the CLI commands e.g. via the symbol in the menu bar.
+- Validate and improve the classifier algorithm.

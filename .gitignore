@@ -8,6 +8,10 @@ menubar/.build/
 # Internal / AI tooling
 CLAUDE.md
 TODO.md
+*.mov
+.superpowers/
+scripts/
+docs/
 
 # macOS
 .DS_Store
