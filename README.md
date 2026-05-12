@@ -29,18 +29,16 @@ This is by no means a perfect tool and/or perfect code, but it was a fun way to 
 
 ## Install
 
-Download the latest release, extract both binaries, and put them on your `$PATH`:
+The following script downloads the latest release, extracts both binaries, and puts them in `/usr/local/bin`.
+Please ensure that `/usr/local/bin` is available on your `$PATH`.
 
-```bash
-# replace version with your desired version
-VERSION=0.1.0
-FILENAME=pace-coach-$VERSION-aarch64-apple-darwin.tar.gz
-wget https://github.com/job-almekinders/pace-coach/releases/download/v$VERSION/$FILENAME
-tar -xvzf $FILENAME
-mv pace-coach pace-coach-menubar /usr/local/bin/
+```sh
+curl -fsSL https://raw.githubusercontent.com/job-almekinders/pace-coach/main/install.sh | sh
 ```
 
-pace-coach requires **Input Monitoring** permission (System Settings → Privacy & Security → Input Monitoring). Please grant it on the first run.
+Requires Apple Silicon (arm64). The script downloads the latest release and installs both binaries to `/usr/local/bin`.
+
+`pace-coach` requires **Input Monitoring** permission (System Settings → Privacy & Security → Input Monitoring). Please grant it on the first run.
 
 ---
 
