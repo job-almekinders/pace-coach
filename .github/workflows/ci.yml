@@ -10,3 +10,14 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
       - uses: Swatinem/rust-cache@v2
       - run: cargo test
+      - run: cargo build --release
+      - run: swift build --package-path menubar -c release
+      - run: swift test --package-path menubar
+      - run: cp menubar/.build/release/MenuBar target/release/pace-coach-menubar
+      - uses: actions/upload-artifact@v4
+        with:
+          name: pace-coach-binaries
+          path: |
+            target/release/pace-coach
+            target/release/pace-coach-menubar
+          retention-days: 7
