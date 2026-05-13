@@ -5,8 +5,8 @@ REPO_ROOT := $(shell cd "$(dir $(lastword $(MAKEFILE_LIST)))" && pwd)
 help:
 	@echo "Usage: make <target>"
 	@echo ""
-	@echo "  clean    Remove all build artifacts (Rust + Swift)
-  build    Build both release binaries"
+	@echo "  clean    Remove all build artifacts (Rust + Swift)"
+	@echo "  build    Build both release binaries"
 	@echo "  menubar  Build the Swift menu bar binary only"
 	@echo "  install  Install both binaries to ~/.cargo/bin"
 	@echo "  start    Start the daemon"
