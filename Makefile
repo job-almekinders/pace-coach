@@ -1,6 +1,6 @@
 REPO_ROOT := $(shell cd "$(dir $(lastword $(MAKEFILE_LIST)))" && pwd)
 
-.PHONY: build menubar install clean start stop status logs test lint fmt help update
+.PHONY: build menubar install uninstall clean start stop status logs test lint fmt help update
 
 help:
 	@echo "Usage: make <target>"
@@ -8,7 +8,8 @@ help:
 	@echo "  clean    Remove all build artifacts (Rust + Swift)"
 	@echo "  build    Build both release binaries"
 	@echo "  menubar  Build the Swift menu bar binary only"
-	@echo "  install  Install both binaries to ~/.cargo/bin"
+	@echo "  install    Install both binaries to ~/.cargo/bin"
+	@echo "  uninstall  Stop daemon and remove binaries from /usr/local/bin"
 	@echo "  start    Start the daemon"
 	@echo "  stop     Stop the daemon"
 	@echo "  status   Show current typing state"
@@ -43,6 +44,13 @@ install:
 	swift build --package-path menubar -c release
 	cp menubar/.build/release/MenuBar $(HOME)/.cargo/bin/pace-coach-menubar
 	@echo "==> Done. Run 'pace-coach start' to launch."
+
+uninstall:
+	@echo "==> Stopping pace-coach..."
+	-/usr/local/bin/pace-coach stop 2>/dev/null || true
+	@echo "==> Removing binaries from /usr/local/bin (may require sudo)..."
+	sudo rm -f /usr/local/bin/pace-coach /usr/local/bin/pace-coach-menubar
+	@echo "==> Done."
 
 start:
 	cargo run -- start
