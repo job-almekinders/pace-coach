@@ -2,41 +2,40 @@ import XCTest
 @testable import MenuBarCore
 
 final class MenuBarTests: XCTestCase {
-    func testDecodeValidEmoji() throws {
+
+    func test_decodeStatus_returnsRunningForFullJSON() {
+        let json = """
+        {"state":"NORMAL","emoji":"🟡","correction_rate":0.032,
+         "kpm60":248.0,"kpm_10":250.0,"var_dt":0.05}
+        """.data(using: .utf8)!
+        let s = decodeStatus(from: json)
+        XCTAssertTrue(s.running)
+        XCTAssertEqual(s.emoji, "🟡")
+        XCTAssertEqual(s.state, "NORMAL")
+        XCTAssertEqual(s.correctionRate, 0.032, accuracy: 0.001)
+        XCTAssertEqual(s.keysPerMin, 248)
+    }
+
+    func test_decodeStatus_returnsNotRunningForEmptyData() {
+        XCTAssertFalse(decodeStatus(from: Data()).running)
+    }
+
+    func test_decodeStatus_returnsNotRunningForMissingFields() {
         let json = #"{"emoji":"🟡"}"#.data(using: .utf8)!
-        XCTAssertEqual(decodeEmoji(from: json), "🟡")
+        XCTAssertFalse(decodeStatus(from: json).running)
     }
 
-    func testDecodeAllStateEmojis() throws {
-        for emoji in ["⚪", "🔵", "🟡", "🔴"] {
-            let json = "{\"emoji\":\"\(emoji)\"}".data(using: .utf8)!
-            XCTAssertEqual(decodeEmoji(from: json), emoji)
-        }
+    func test_decodeStatus_notRunningHasBlackCircle() {
+        XCTAssertEqual(decodeStatus(from: Data()).emoji, "⚫")
     }
 
-    func testDecodeFallsBackOnInvalidJSON() {
-        let bad = "not json".data(using: .utf8)!
-        XCTAssertEqual(decodeEmoji(from: bad), "⚫")
+    func test_daemonIsRunning_returnsFalseForMissingSocket() {
+        XCTAssertFalse(daemonIsRunning(sockPath: "/tmp/no-such-\(UUID()).sock"))
     }
 
-    func testDecodeFallsBackOnEmptyData() {
-        XCTAssertEqual(decodeEmoji(from: Data()), "⚫")
-    }
-
-    func testDecodeFallsBackOnMissingEmojiField() {
-        let json = #"{"state":"NORMAL"}"#.data(using: .utf8)!
-        XCTAssertEqual(decodeEmoji(from: json), "⚫")
-    }
-
-    func testSnapshotDecodable() throws {
-        let json = #"{"emoji":"🔴","extra_field":"ignored"}"#.data(using: .utf8)!
-        let snap = try JSONDecoder().decode(Snapshot.self, from: json)
-        XCTAssertEqual(snap.emoji, "🔴")
-    }
-
-    func testQueryDaemonFallsBackWhenSocketMissing() {
-        // Uses a path that definitely does not exist
-        let result = queryDaemon(sockPath: "/tmp/pace-coach-no-such-socket-\(UUID().uuidString).sock")
-        XCTAssertEqual(result, "⚫")
+    func test_queryDaemon_returnsNotRunningWhenSocketMissing() {
+        let result = queryDaemon(sockPath: "/tmp/no-such-\(UUID()).sock")
+        XCTAssertFalse(result.running)
+        XCTAssertEqual(result.emoji, "⚫")
     }
 }
