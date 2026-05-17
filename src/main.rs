@@ -11,7 +11,7 @@ use std::time::Duration;
 #[derive(Parser)]
 #[command(
     name = "pace-coach",
-    about = "Typing pace monitor — nudges you when you type stressed"
+    about = "Typing pace monitor — nudges you when your pace signals rushing"
 )]
 struct Cli {
     #[command(subcommand)]

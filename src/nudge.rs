@@ -1,14 +1,14 @@
 use std::time::{Duration, Instant};
 
 pub struct NudgeState {
-    stressed_since: Option<Instant>,
+    rushing_since: Option<Instant>,
     last_nudge: Option<Instant>,
 }
 
 impl NudgeState {
     pub fn new() -> Self {
         Self {
-            stressed_since: None,
+            rushing_since: None,
             last_nudge: None,
         }
     }
@@ -19,9 +19,9 @@ impl NudgeState {
         stress_duration_secs: u64,
         nudge_cooldown_secs: u64,
     ) -> bool {
-        if state_label == "STRESSED" {
+        if state_label == "RUSHING" {
             let now = Instant::now();
-            let since = self.stressed_since.get_or_insert(now);
+            let since = self.rushing_since.get_or_insert(now);
 
             let past_threshold =
                 now.duration_since(*since) >= Duration::from_secs(stress_duration_secs);
@@ -35,7 +35,7 @@ impl NudgeState {
                 return true;
             }
         } else {
-            self.stressed_since = None;
+            self.rushing_since = None;
         }
         false
     }
@@ -54,7 +54,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn nudge_not_fired_for_non_stressed_states() {
+    fn nudge_not_fired_for_non_rushing_states() {
         let mut n = NudgeState::new();
         assert!(!n.update("NORMAL", 0, 0));
         assert!(!n.update("IDLE", 0, 0));
@@ -62,29 +62,29 @@ mod tests {
     }
 
     #[test]
-    fn nudge_not_fired_below_stress_duration() {
+    fn nudge_not_fired_below_rushing_duration() {
         let mut n = NudgeState::new();
-        assert!(!n.update("STRESSED", 60, 0));
+        assert!(!n.update("RUSHING", 60, 0));
     }
 
     #[test]
-    fn nudge_fires_when_stress_duration_is_zero() {
+    fn nudge_fires_when_rushing_duration_is_zero() {
         let mut n = NudgeState::new();
-        assert!(n.update("STRESSED", 0, 0));
+        assert!(n.update("RUSHING", 0, 0));
     }
 
     #[test]
     fn nudge_respects_cooldown() {
         let mut n = NudgeState::new();
-        assert!(n.update("STRESSED", 0, 0));
-        assert!(!n.update("STRESSED", 0, 60));
+        assert!(n.update("RUSHING", 0, 0));
+        assert!(!n.update("RUSHING", 0, 60));
     }
 
     #[test]
-    fn stressed_since_resets_on_non_stressed_state() {
+    fn rushing_since_resets_on_non_rushing_state() {
         let mut n = NudgeState::new();
-        n.update("STRESSED", 0, 0);
+        n.update("RUSHING", 0, 0);
         n.update("NORMAL", 0, 0);
-        assert!(n.stressed_since.is_none());
+        assert!(n.rushing_since.is_none());
     }
 }
