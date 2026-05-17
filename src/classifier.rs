@@ -1,6 +1,6 @@
 //! Threshold-based state classifier.
 //!
-//! `stressed_threshold` is passed by the caller (from Settings) so the
+//! `rushing_threshold` is passed by the caller (from Settings) so the
 //! function stays pure and testable without touching shared state.
 
 use serde::Serialize;
@@ -16,8 +16,8 @@ pub enum State {
     Passive,
     /// Active typing, correction rate within normal range.
     Normal,
-    /// Active typing, high correction rate — stress signal.
-    Stressed,
+    /// Active typing, high correction rate — rushing signal.
+    Rushing,
 }
 
 impl State {
@@ -26,7 +26,7 @@ impl State {
             State::Idle => "⚪",
             State::Passive => "🔵",
             State::Normal => "🟡",
-            State::Stressed => "🔴",
+            State::Rushing => "🔴",
         }
     }
 
@@ -35,7 +35,7 @@ impl State {
             State::Idle => "IDLE",
             State::Passive => "PASSIVE",
             State::Normal => "NORMAL",
-            State::Stressed => "STRESSED",
+            State::Rushing => "RUSHING",
         }
     }
 }
@@ -45,7 +45,7 @@ pub fn classify(
     kpm60: f64,
     var_dt: f64,
     correction_rate: f64,
-    stressed_threshold: f64,
+    rushing_threshold: f64,
 ) -> State {
     if !is_active {
         return State::Idle;
@@ -53,10 +53,10 @@ pub fn classify(
     if kpm60 < PASSIVE_KPM_THRESHOLD || var_dt > PASSIVE_VAR_DT_THRESHOLD {
         return State::Passive;
     }
-    if correction_rate <= stressed_threshold {
+    if correction_rate <= rushing_threshold {
         return State::Normal;
     }
-    State::Stressed
+    State::Rushing
 }
 
 #[cfg(test)]
@@ -88,20 +88,20 @@ mod tests {
     }
 
     #[test]
-    fn stressed_when_high_correction_rate() {
-        assert_eq!(classify(true, 50.0, 1.0, 0.057, 0.056), State::Stressed);
-        assert_eq!(classify(true, 200.0, 0.5, 0.9, 0.056), State::Stressed);
+    fn rushing_when_high_correction_rate() {
+        assert_eq!(classify(true, 50.0, 1.0, 0.057, 0.056), State::Rushing);
+        assert_eq!(classify(true, 200.0, 0.5, 0.9, 0.056), State::Rushing);
     }
 
     #[test]
     fn sensitive_profile_triggers_earlier() {
-        assert_eq!(classify(true, 50.0, 1.0, 0.043, 0.042), State::Stressed);
+        assert_eq!(classify(true, 50.0, 1.0, 0.043, 0.042), State::Rushing);
         assert_eq!(classify(true, 50.0, 1.0, 0.043, 0.056), State::Normal);
     }
 
     #[test]
     fn relaxed_profile_requires_higher_rate() {
         assert_eq!(classify(true, 50.0, 1.0, 0.060, 0.067), State::Normal);
-        assert_eq!(classify(true, 50.0, 1.0, 0.060, 0.056), State::Stressed);
+        assert_eq!(classify(true, 50.0, 1.0, 0.060, 0.056), State::Rushing);
     }
 }

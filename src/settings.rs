@@ -7,9 +7,9 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct Settings {
-    /// Correction rate above which typing is classified as Stressed.
+    /// Correction rate above which typing is classified as Rushing.
     pub correction_rate_threshold: f64,
-    /// Seconds of sustained Stressed state before a nudge fires.
+    /// Seconds of sustained Rushing state before a nudge fires.
     pub stress_duration_secs: u64,
     /// Minimum seconds between nudges.
     pub nudge_cooldown_secs: u64,

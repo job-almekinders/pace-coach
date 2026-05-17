@@ -1,21 +1,21 @@
 # Pace Coach
 
-A macOS CLI daemon that watches your typing rhythm and nudges you when you are rushing/stressed.
+A macOS CLI daemon that monitors your typing rhythm and nudges you when your pace signals you're rushing. The goal is to support sustainable focus and healthy workflow patterns.
 
-It monitors your keystrokes locally (nothing leaves your machine!), classifies your typing state every two seconds, fires a macOS notification when you've been in a stressed state for too long, and shows a live emoji in your menu bar with the status of the application.
+It monitors your keystrokes locally (nothing leaves your machine!), classifies your typing state every two seconds, fires a macOS notification when you've been in a rushing state for too long, and shows a live emoji in your menu bar with the status of the application.
 
 ![Demo](assets/demo.gif)
 
-Note that for demo purposes, the nudge fires earlier than in the default configuration.
+Note that for above demo in the GIF the nudge fires earlier than in the default configuration.
 
 **States:**
 
 - ⚪ Idle — no recent typing
 - 🔵 Passive — low activity or irregular rhythm
 - 🟡 Normal — active, correction rate within range
-- 🔴 Stressed — high correction rate sustained
+- 🔴 Rushing — high correction rate sustained
 
-The primary driver for the Stressed state is the correction rate.
+The primary driver for the Rushing state is the correction rate.
 See [`src/classifier.rs`](src/classifier.rs) for the full classification logic.
 
 ---
@@ -23,7 +23,15 @@ See [`src/classifier.rs`](src/classifier.rs) for the full classification logic.
 ## Why
 
 I built this to explore Rust and macOS native development, creating a lightweight CLI tool that provides awareness of my workflow patterns.
-This is by no means a perfect tool and/or perfect code, but it was a fun way to get acquinted with these new tools :)
+This is by no means a perfect tool and/or perfect code, but it was a fun way to get acquinted with these new technologies :)
+
+---
+
+## Privacy & Security
+
+`pace-coach` runs entirely local on your machine. It never records, stores, or transmits the **content** of your keystrokes: only the **timing intervals between keypresses** are held in memory, and only long enough to compute the current pace metrics (2s). Once a classification cycle completes this data is discarded.
+
+The macOS **Input Monitoring** permission is required to detect keypress events system-wide.
 
 ---
 
@@ -66,11 +74,11 @@ Edit `~/.pace-coach/config.json` then restart the daemon:
 }
 ```
 
-| Setting                     | Default | Description                                                                                   |
-| --------------------------- | ------- | --------------------------------------------------------------------------------------------- |
-| `correction_rate_threshold` | `0.06`  | Fraction of keystrokes that are corrections before state is Stressed. Lower = more sensitive. |
-| `stress_duration_secs`      | `10`    | Seconds of sustained Stressed state before a nudge fires.                                     |
-| `nudge_cooldown_secs`       | `60`    | Minimum seconds between nudges.                                                               |
+| Setting                     | Default | Description                                                                                  |
+| --------------------------- | ------- | -------------------------------------------------------------------------------------------- |
+| `correction_rate_threshold` | `0.06`  | Fraction of keystrokes that are corrections before state is Rushing. Lower = more sensitive. |
+| `stress_duration_secs`      | `10`    | Seconds of sustained Rushing state before a nudge fires.                                     |
+| `nudge_cooldown_secs`       | `60`    | Minimum seconds between nudges.                                                              |
 
 ---
 
